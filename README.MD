@@ -1,87 +1,111 @@
-# Functional Programming Exercises in Racket
+# Functional Programming and Numerical Methods in Racket
 
-Small university project containing a collection of functional-programming and numerical-computation exercises written in Racket.
+University project developed for the second **Languages and Applications for Artificial Intelligence** assignment.
 
-> **Academic project**
->
-> This repository is not a complete application or reusable library. It has no command-line interface, graphical interface, automated test suite, packaged API, or executable workflow. It is mainly useful for reading the implementations and evaluating the functions interactively in DrRacket.
+The assignment consists of implementing a selection of exercises from Chapter 1 of *Structure and Interpretation of Computer Programs* (SICP), with particular focus on evaluation strategies, higher-order procedures, fixed-point iteration and continued fractions.
 
-## Reconstructed assignment
+## Assignment
 
-The original assignment brief is not included in the repository. Based on the implemented procedures, the project appears to cover exercises from Chapter 1 of *Structure and Interpretation of Computer Programs* (SICP), especially Exercises 1.4, 1.5 and 1.35–1.38.
+The project covers SICP Exercises **1.4, 1.5 and 1.35–1.38**:
 
-This reconstruction is inferred from the source code and should not be considered the official assignment text.
+- defining an arithmetic procedure that selects an operator at runtime;
+- analysing applicative-order evaluation through a deliberately non-terminating procedure;
+- approximating the golden ratio with fixed-point iteration;
+- comparing convergence with and without average damping;
+- implementing finite continued fractions using recursive and iterative processes;
+- approximating the inverse golden ratio and Euler's number.
 
-## What the project demonstrates
+## Implemented exercises
 
-The file [`laai2_racket.rkt`](laai2_racket.rkt) includes examples of:
+All implementations are contained in [`laai2_racket.rkt`](laai2_racket.rkt).
 
-- applicative-order evaluation and deliberate non-termination;
-- higher-order procedures, including selecting an arithmetic operator at runtime;
-- fixed-point iteration with a configurable numerical tolerance;
-- approximation of the golden ratio;
-- solving equations of the form `x^x = n`, with and without average damping;
-- recursive and iterative evaluation of finite continued fractions;
-- approximation of `1 / φ` and Euler's number through continued fractions.
+### Operator selection
 
-Although the source uses `#lang gamble` and imports `gamble/viz`, it does not define probabilistic models or use Gamble's inference features. The implemented exercises rely on ordinary functional and numerical operations.
+`a-plus-abs-b` computes `a + |b|` by choosing either addition or subtraction as a first-class procedure.
+
+```racket
+(a-plus-abs-b 5 -3)
+; 8
+```
+
+### Evaluation order
+
+The procedures `p` and `test` reproduce the evaluation-order example from SICP Exercise 1.5.
+
+```racket
+(define p (lambda () (p)))
+
+(define (test x y)
+  (if (= x 0) 0 y))
+```
+
+Evaluating `(test 0 (p))` under Racket's applicative-order evaluation does not terminate because the argument `(p)` is evaluated before `test` is applied.
+
+### Fixed-point iteration
+
+The generic `fixed-point` procedure repeatedly applies a function until two consecutive values differ by less than the configured tolerance.
+
+It is used to:
+
+- approximate the golden ratio;
+- solve equations of the form `x^x = n`;
+- compare convergence with and without average damping.
+
+```racket
+(golden-ration-fixed-point)
+
+(log-no-avg 1000)
+(log-with-avg 1000)
+```
+
+The procedure prints each intermediate approximation, making the convergence process directly observable.
+
+### Continued fractions
+
+Finite continued fractions are implemented in two ways:
+
+- `cont-frac-rec`, using a recursive process;
+- `cont-frac-iter`, using an iterative process.
+
+They are used to approximate the inverse golden ratio:
+
+```racket
+(one-over-gr-appr-rec 11)
+(one-over-gr-appr-iter 11)
+; approximately 0.618
+```
+
+The `de-fractionibus-continuis` procedure implements Euler's continued-fraction expansion for `e - 2`:
+
+```racket
+(+ 2 (de-fractionibus-continuis 10))
+; approximately 2.7182817
+```
 
 ## Requirements
 
 - [Racket](https://racket-lang.org/)
-- [Gamble](https://rmculpepper.github.io/gamble/), required by the module declaration
+- [Gamble](https://rmculpepper.github.io/gamble/)
 
-Install the Gamble package with:
+Install Gamble through Racket's package manager:
 
 ```bash
 raco pkg install gamble
 ```
 
-## Running the exercises
+## Running the project
 
-Open `laai2_racket.rkt` in DrRacket and select **Run**. The file only defines procedures, so it does not produce a complete result automatically. Call the desired functions from the interactions window.
+Open [`laai2_racket.rkt`](laai2_racket.rkt) in DrRacket and select **Run**. The procedures can then be evaluated from the interactions window.
 
-Examples:
+Alternatively, run the file from a terminal:
 
-```racket
-(a-plus-abs-b 5 -3)
-; 8
-
-(golden-ration-fixed-point)
-; prints the intermediate guesses and converges to approximately 1.618
-
-(log-no-avg 1000)
-(log-with-avg 1000)
-; compare fixed-point convergence with and without average damping
-
-(one-over-gr-appr-rec 11)
-(one-over-gr-appr-iter 11)
-; approximately 0.618
-
-(+ 2 (de-fractionibus-continuis 10))
-; approximately 2.7182817
+```bash
+racket laai2_racket.rkt
 ```
 
-## Important caveat
-
-The procedure `p` is intentionally recursive without a base case. Evaluating the following expression under Racket's eager evaluation strategy does not terminate:
-
-```racket
-(test 0 (p))
-```
-
-This behavior is part of the evaluation-order experiment, not a general-purpose function.
+Since the source file defines procedures without invoking them automatically, call the desired functions from DrRacket or add temporary expressions at the end of the file.
 
 ## Repository contents
 
-- `laai2_racket.rkt` — exercise implementations;
-- `laai2_racket.bak` — an older editor backup containing only the initial evaluation-order example.
-
-## Limitations
-
-- the original assignment text is missing;
-- there is no main program or interactive menu;
-- the functions are not exposed as a documented library;
-- there are no automated tests;
-- the project imports Gamble but does not use probabilistic programming;
-- some identifiers retain spelling mistakes from the original coursework, such as `tollerance` and `golden-ration-fixed-point`.
+- `laai2_racket.rkt` — complete implementation of the assignment;
+- `laai2_racket.bak` — earlier backup of the initial evaluation-order exercise.
